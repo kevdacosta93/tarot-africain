@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Tarot Africain</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Ecran d'accueil -->
+    <section id="screen-landing" class="screen">
+      <div class="landing-card">
+        <h1>Tarot Africain</h1>
+        <p class="subtitle">Poulpe &middot; Ascenseur &middot; Whist 22</p>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="create">Creer une salle</button>
+          <button class="tab-btn" data-tab="join">Rejoindre une salle</button>
+        </div>
+
+        <div id="tab-create" class="tab-panel active">
+          <label>Ton prenom
+            <input type="text" id="create-name" maxlength="20" placeholder="Ex : Awa" />
+          </label>
+          <button id="btn-create" class="btn-primary">Creer la salle</button>
+        </div>
+
+        <div id="tab-join" class="tab-panel">
+          <label>Code de la salle
+            <input type="text" id="join-code" maxlength="4" placeholder="Ex : A7QF" style="text-transform:uppercase" />
+          </label>
+          <label>Ton prenom
+            <input type="text" id="join-name" maxlength="20" placeholder="Ex : Moussa" />
+          </label>
+          <button id="btn-join" class="btn-primary">Rejoindre</button>
+        </div>
+
+        <p id="landing-error" class="error-msg" hidden></p>
+        <p class="hint">2 a 4 joueurs &middot; les 22 atouts du tarot &middot; 10 vies chacun</p>
+      </div>
+    </section>
+
+    <!-- Salon d'attente -->
+    <section id="screen-lobby" class="screen">
+      <div class="lobby-card">
+        <h2>Salle <span id="lobby-code"></span></h2>
+        <p class="hint">Partage ce code (ou le lien de la page) avec 1 a 3 autres joueurs.</p>
+        <button id="btn-copy-link" class="btn-secondary">Copier le lien d'invitation</button>
+
+        <ul id="lobby-players" class="player-list"></ul>
+
+        <p id="lobby-msg" class="hint"></p>
+        <button id="btn-start" class="btn-primary" hidden>Lancer la partie</button>
+        <button id="btn-leave" class="btn-secondary">Quitter la salle</button>
+        <p id="lobby-error" class="error-msg" hidden></p>
+      </div>
+    </section>
+
+    <!-- Table de jeu -->
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <div class="game-header-left">
+          <span class="room-tag">Salle <b id="game-code"></b></span>
+          <span id="round-tag"></span>
+        </div>
+        <button id="btn-toggle-log" class="btn-ghost">Journal</button>
+      </header>
+
+      <aside id="players-panel" class="players-panel"></aside>
+
+      <main class="table-area">
+        <div id="trick-area" class="trick-area"></div>
+
+        <div id="bidding-area" class="bidding-area" hidden>
+          <p id="bidding-prompt"></p>
+          <div id="bidding-choices" class="chip-row"></div>
+        </div>
+
+        <div id="front-area" class="front-area" hidden>
+          <p class="hint">Manche au front : tu vois les cartes des autres, pas la tienne !</p>
+          <div id="front-others" class="front-others"></div>
+        </div>
+
+        <div id="round-result-area" class="round-result-area" hidden>
+          <h3>Resultat de la manche</h3>
+          <table id="round-result-table"></table>
+          <button id="btn-next-round" class="btn-primary" hidden>Manche suivante</button>
+          <p id="round-result-wait" class="hint" hidden>En attente de l'hote pour continuer...</p>
+        </div>
+
+        <div id="game-over-area" class="game-over-area" hidden>
+          <h3>Partie terminee</h3>
+          <table id="game-over-table"></table>
+          <a href="/" class="btn-primary">Nouvelle partie</a>
+        </div>
+      </main>
+
+      <div id="hand-area" class="hand-area"></div>
+
+      <aside id="log-panel" class="log-panel" hidden>
+        <h4>Journal</h4>
+        <ul id="log-list"></ul>
+      </aside>
+
+      <div id="toast" class="toast" hidden></div>
+    </section>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game.js"></script>
+</body>
+</html>
