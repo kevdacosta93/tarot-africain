@@ -1,0 +1,20 @@
+{
+  "name": "tarot-africain",
+  "version": "1.0.0",
+  "description": "Tarot Africain (Poulpe / Ascenseur) - jeu de cartes multijoueur en ligne",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/e2e-test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.7.5"
+  }
+}
