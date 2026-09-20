@@ -41,6 +41,123 @@
   }
 
   // ---------------------------------------------------------------------
+  // Cartes dessinees en SVG (design original, pas de reproduction d'un
+  // jeu de tarot existant)
+  // ---------------------------------------------------------------------
+  function svgWrap(inner, w, h) {
+    return (
+      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">` +
+      inner +
+      '</svg>'
+    );
+  }
+
+  function trumpFaceSVG(value) {
+    const w = 100,
+      h = 140;
+    return svgWrap(
+      `
+      <rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="10" fill="url(#cardBg)" stroke="#8a6423" stroke-width="2"/>
+      <rect x="9" y="9" width="${w - 18}" height="${h - 18}" rx="7" fill="none" stroke="#c1552e" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="13" y="23" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#3a2a12" font-weight="700">${value}</text>
+      <text x="${w - 13}" y="${h - 13}" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#3a2a12" font-weight="700" text-anchor="end" transform="rotate(180 ${w - 13} ${h - 13})">${value}</text>
+      <g transform="translate(${w / 2} ${h / 2})">
+        <circle r="27" fill="none" stroke="#c1552e" stroke-width="1.4" opacity="0.5"/>
+        <circle r="19" fill="none" stroke="#d9a441" stroke-width="1" opacity="0.6"/>
+        <path d="M0 -32 L5 -12 L0 8 L-5 -12 Z" fill="#c1552e" opacity="0.85"/>
+        <path d="M0 32 L5 12 L0 -8 L-5 12 Z" fill="#d9a441" opacity="0.85"/>
+        <text x="0" y="10" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#1c2b24" font-weight="800">${value}</text>
+      </g>
+    `,
+      w,
+      h,
+    );
+  }
+
+  function excuseFaceSVG(declLabel) {
+    const w = 100,
+      h = 140;
+    return svgWrap(
+      `
+      <rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="10" fill="url(#excuseBg)" stroke="#7a3d1a" stroke-width="2"/>
+      <rect x="9" y="9" width="${w - 18}" height="${h - 18}" rx="7" fill="none" stroke="#fbf3e3" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+      <g transform="translate(${w / 2} ${h / 2 - 12})">
+        <path d="M-20 8 L-12 -18 L0 -4 L12 -18 L20 8 Z" fill="#fbf3e3" opacity="0.92"/>
+        <circle cx="-12" cy="-18" r="3.4" fill="#fbf3e3"/>
+        <circle cx="0" cy="-4" r="3.4" fill="#fbf3e3"/>
+        <circle cx="12" cy="-18" r="3.4" fill="#fbf3e3"/>
+        <circle cy="16" r="10" fill="#fbf3e3" opacity="0.92"/>
+      </g>
+      <text x="${w / 2}" y="${h - 14}" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#2a1505" font-weight="700">EXCUSE${declLabel ? ' (' + declLabel + ')' : ''}</text>
+    `,
+      w,
+      h,
+    );
+  }
+
+  function hiddenFaceSVG() {
+    const w = 100,
+      h = 140;
+    return svgWrap(
+      `
+      <rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="10" fill="url(#hiddenPattern)" stroke="#d9a441" stroke-width="2" opacity="0.95"/>
+      <circle cx="${w / 2}" cy="${h / 2}" r="16" fill="#0c2a1e" opacity="0.55"/>
+      <text x="${w / 2}" y="${h / 2 + 8}" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#d9a441">?</text>
+    `,
+      w,
+      h,
+    );
+  }
+
+  const LIFE_SHORT = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'K'];
+  function lifeShortLabel(lives) {
+    if (lives <= 0) return null;
+    return LIFE_SHORT[Math.min(lives, 10) - 1];
+  }
+  function lifeFullLabel(lives) {
+    if (lives <= 0) return 'Elimine';
+    if (lives >= 10) return 'Roi';
+    if (lives === 1) return 'As';
+    return String(lives) + ' (vies)';
+  }
+
+  function lifeFaceSVG(lives) {
+    const w = 46,
+      h = 62;
+    const eliminated = lives <= 0;
+    const accent = eliminated ? '#8a3530' : lives <= 2 ? '#d1493f' : lives <= 5 ? '#d9a441' : '#4c9a6a';
+    if (eliminated) {
+      return svgWrap(
+        `
+        <rect x="2" y="2" width="${w - 4}" height="${h - 4}" rx="7" fill="#241012" stroke="${accent}" stroke-width="2"/>
+        <text x="${w / 2}" y="${h / 2 + 7}" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="${accent}">&#10005;</text>
+      `,
+        w,
+        h,
+      );
+    }
+    const label = lifeShortLabel(lives);
+    return svgWrap(
+      `
+      <rect x="2" y="2" width="${w - 4}" height="${h - 4}" rx="7" fill="url(#lifeBg)" stroke="${accent}" stroke-width="2"/>
+      <text x="${w / 2}" y="${h / 2 + 7}" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#1c2b24" font-weight="800">${label}</text>
+    `,
+      w,
+      h,
+    );
+  }
+
+  function cardFaceMarkup(card, opts) {
+    opts = opts || {};
+    if (card.hidden) return hiddenFaceSVG();
+    if (card.type === 'excuse') {
+      const label = opts.declaration === 'mini' ? 'mini' : opts.declaration === 'maxi' ? 'maxi' : null;
+      return excuseFaceSVG(label);
+    }
+    return trumpFaceSVG(card.value);
+  }
+
+  // ---------------------------------------------------------------------
   // Elements
   // ---------------------------------------------------------------------
   const screens = {
@@ -86,6 +203,7 @@
     gameOverArea: document.getElementById('game-over-area'),
     gameOverTable: document.getElementById('game-over-table'),
     handArea: document.getElementById('hand-area'),
+    handPrompt: document.getElementById('hand-prompt'),
     logPanel: document.getElementById('log-panel'),
     logList: document.getElementById('log-list'),
     btnToggleLog: document.getElementById('btn-toggle-log'),
@@ -221,30 +339,6 @@
   // ---------------------------------------------------------------------
   // Rendu
   // ---------------------------------------------------------------------
-  function cardLabel(card) {
-    if (!card) return '';
-    if (card.type === 'excuse') return 'Excuse';
-    return String(card.value);
-  }
-
-  function cardEl(card, opts) {
-    opts = opts || {};
-    const div = document.createElement('div');
-    div.className = opts.className || 'playing-card';
-    if (card.hidden) {
-      div.classList.add('hidden-card');
-      div.textContent = '?';
-      return div;
-    }
-    if (card.type === 'excuse') {
-      div.classList.add('excuse');
-      div.textContent = opts.declaration === 'mini' ? 'Excuse (mini)' : 'Excuse';
-    } else {
-      div.textContent = String(card.value);
-    }
-    return div;
-  }
-
   function playerName(state, id) {
     const p = state.players.find((pl) => pl.id === id);
     return p ? p.name : '?';
@@ -316,10 +410,14 @@
       renderFrontOthers(state);
     }
 
+    // La main est visible des la phase d'annonces : il faut voir son jeu
+    // pour savoir combien de plis on pense pouvoir remporter.
+    if (state.phase === 'bidding' || state.phase === 'playing') {
+      renderHand(state);
+    }
+
     if (state.phase === 'bidding') {
       renderBidding(state);
-    } else if (state.phase === 'playing') {
-      renderHand(state);
     } else if (state.phase === 'round_result') {
       renderRoundResult(state);
     } else if (state.phase === 'game_over') {
@@ -335,16 +433,26 @@
       if (p.id === state.turnId) chip.classList.add('is-turn');
       if (!p.connected) chip.classList.add('disconnected');
 
-      const row = document.createElement('div');
-      row.className = 'name-row';
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = p.name + (p.id === playerId ? ' (toi)' : '') + (p.id === state.dealerId ? ' - D' : '');
-      const lives = document.createElement('span');
-      lives.className = 'lives';
-      lives.textContent = '♥ ' + p.lives;
-      row.appendChild(nameSpan);
-      row.appendChild(lives);
-      chip.appendChild(row);
+      const top = document.createElement('div');
+      top.className = 'chip-top';
+
+      const lifeCard = document.createElement('div');
+      lifeCard.className = 'life-card';
+      lifeCard.innerHTML = lifeFaceSVG(p.lives);
+      lifeCard.title = lifeFullLabel(p.lives);
+      top.appendChild(lifeCard);
+
+      const info = document.createElement('div');
+      info.className = 'chip-info';
+      const nameRow = document.createElement('div');
+      nameRow.className = 'name-row';
+      nameRow.textContent = p.name + (p.id === playerId ? ' (toi)' : '') + (p.id === state.dealerId ? ' - D' : '');
+      info.appendChild(nameRow);
+
+      const lifeLabel = document.createElement('div');
+      lifeLabel.className = 'life-label';
+      lifeLabel.textContent = lifeFullLabel(p.lives) + (p.lives > 0 ? ` • ${p.lives} vie(s)` : '');
+      info.appendChild(lifeLabel);
 
       const meta = document.createElement('div');
       meta.className = 'meta';
@@ -355,8 +463,10 @@
         if (state.phase === 'bidding' && p.hasBid) bits.push('a annonce');
       }
       meta.textContent = bits.join(' - ');
-      chip.appendChild(meta);
+      info.appendChild(meta);
 
+      top.appendChild(info);
+      chip.appendChild(top);
       els.playersPanel.appendChild(chip);
     });
   }
@@ -379,7 +489,10 @@
       who.className = 'who';
       who.textContent = playerName(state, played.playerId);
       wrap.appendChild(who);
-      wrap.appendChild(cardEl(played.card, { declaration: played.declaration }));
+      const cardHolder = document.createElement('div');
+      cardHolder.className = 'playing-card';
+      cardHolder.innerHTML = cardFaceMarkup(played.card, { declaration: played.declaration });
+      wrap.appendChild(cardHolder);
       els.trickArea.appendChild(wrap);
     });
   }
@@ -393,13 +506,14 @@
       const name = document.createElement('span');
       name.textContent = playerName(state, entry.playerId);
       wrap.appendChild(name);
+      const cardHolder = document.createElement('div');
+      cardHolder.className = 'playing-card';
       if (entry.card) {
-        wrap.appendChild(cardEl(entry.card));
+        cardHolder.innerHTML = cardFaceMarkup(entry.card);
       } else {
-        const dash = document.createElement('span');
-        dash.textContent = '-';
-        wrap.appendChild(dash);
+        cardHolder.innerHTML = hiddenFaceSVG();
       }
+      wrap.appendChild(cardHolder);
       els.frontOthers.appendChild(wrap);
     });
   }
@@ -408,7 +522,7 @@
     els.biddingArea.hidden = false;
     const myTurn = state.turnId === playerId;
     els.biddingPrompt.textContent = myTurn
-      ? 'Combien de plis penses-tu remporter ?'
+      ? 'Tu as vu ton jeu : combien de plis penses-tu remporter ?'
       : `En attente de l'annonce de ${playerName(state, state.turnId)}...`;
     els.biddingChoices.innerHTML = '';
     if (myTurn && state.bidAllowedValues) {
@@ -426,31 +540,21 @@
     }
   }
 
-  let pendingExcuseCardId = null;
-
   function renderHand(state) {
     (state.yourHand || []).forEach((card) => {
-      const el = document.createElement('div');
-      el.className = 'hand-card';
-      if (card.hidden) {
-        el.classList.add('hidden-card');
-        el.textContent = '?';
-      } else if (card.type === 'excuse') {
-        el.classList.add('excuse');
-        el.textContent = 'Excuse';
-      } else {
-        el.textContent = String(card.value);
-      }
+      const wrap = document.createElement('div');
+      wrap.className = 'hand-card';
+      wrap.innerHTML = cardFaceMarkup(card);
 
-      const legal = state.legalPlays && state.legalPlays.includes(card.id);
-      const myTurn = state.turnId === playerId;
+      const legal = state.phase === 'playing' && state.legalPlays && state.legalPlays.includes(card.id);
+      const myTurn = state.phase === 'playing' && state.turnId === playerId;
       if (myTurn && legal) {
-        el.classList.add('playable');
-        el.addEventListener('click', () => onCardClick(state, card));
+        wrap.classList.add('playable');
+        wrap.addEventListener('click', () => onCardClick(state, card));
       } else {
-        el.classList.add('disabled');
+        wrap.classList.add('disabled');
       }
-      els.handArea.appendChild(el);
+      els.handArea.appendChild(wrap);
     });
   }
 
@@ -465,7 +569,6 @@
   }
 
   function openExcuseModal(cardId) {
-    pendingExcuseCardId = cardId;
     const backdrop = document.createElement('div');
     backdrop.className = 'excuse-modal-backdrop';
     const modal = document.createElement('div');
@@ -506,7 +609,7 @@
     const table = els.roundResultTable;
     table.innerHTML = '';
     const thead = document.createElement('tr');
-    ['Joueur', 'Annonce', 'Plis', 'Ecart', 'Vies'].forEach((h) => {
+    ['Joueur', 'Annonce', 'Plis', 'Ecart', 'Vies', 'Carte'].forEach((h) => {
       const th = document.createElement('th');
       th.textContent = h;
       thead.appendChild(th);
@@ -516,7 +619,7 @@
       const res = r && r.results ? r.results[p.id] : null;
       if (!res) return;
       const tr = document.createElement('tr');
-      [p.name, res.bid, res.won, res.diff, res.livesAfter].forEach((val) => {
+      [p.name, res.bid, res.won, res.diff, res.livesAfter, lifeFullLabel(res.livesAfter)].forEach((val) => {
         const td = document.createElement('td');
         td.textContent = String(val);
         tr.appendChild(td);
@@ -534,7 +637,7 @@
     const table = els.gameOverTable;
     table.innerHTML = '';
     const thead = document.createElement('tr');
-    ['Classement', 'Joueur', 'Vies restantes'].forEach((h) => {
+    ['Classement', 'Joueur', 'Vies restantes', 'Carte'].forEach((h) => {
       const th = document.createElement('th');
       th.textContent = h;
       thead.appendChild(th);
@@ -543,7 +646,7 @@
     (r.standings || []).forEach((s, idx) => {
       const tr = document.createElement('tr');
       const rankTxt = s.eliminated ? 'Elimine' : String(idx + 1);
-      [rankTxt, s.name, s.lives].forEach((val) => {
+      [rankTxt, s.name, s.lives, lifeFullLabel(s.lives)].forEach((val) => {
         const td = document.createElement('td');
         td.textContent = String(val);
         tr.appendChild(td);

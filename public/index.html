@@ -7,6 +7,26 @@
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fdf6e8" />
+        <stop offset="1" stop-color="#f1e2c2" />
+      </linearGradient>
+      <linearGradient id="excuseBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f0c976" />
+        <stop offset="1" stop-color="#c1552e" />
+      </linearGradient>
+      <linearGradient id="lifeBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fdf6e8" />
+        <stop offset="1" stop-color="#e7d3ab" />
+      </linearGradient>
+      <pattern id="hiddenPattern" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="#113325" />
+        <line x1="0" y1="0" x2="0" y2="10" stroke="#0c2a1e" stroke-width="6" />
+      </pattern>
+    </defs>
+  </svg>
   <div id="app">
 
     <!-- Ecran d'accueil -->
@@ -38,7 +58,7 @@
         </div>
 
         <p id="landing-error" class="error-msg" hidden></p>
-        <p class="hint">2 a 4 joueurs &middot; les 22 atouts du tarot &middot; 10 vies chacun</p>
+        <p class="hint">2 a 4 joueurs &middot; les 22 atouts du tarot &middot; 10 vies chacun, du Roi a l'As</p>
       </div>
     </section>
 

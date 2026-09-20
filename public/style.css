@@ -309,16 +309,40 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 2px rgba(217, 164, 65, 0.4);
 }
 
-.player-chip .name-row {
+.chip-top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.player-chip .lives {
+.life-card {
+  flex: none;
+  width: 34px;
+}
+
+.life-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chip-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-chip .name-row {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-chip .life-label {
   color: var(--terracotta);
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-top: 2px;
 }
 
 .player-chip .meta {
@@ -364,36 +388,17 @@ input[type="text"]:focus {
 }
 
 .playing-card {
-  width: 54px;
-  height: 78px;
+  width: 58px;
+  height: 82px;
   border-radius: 8px;
-  background: var(--card-bg);
-  color: var(--card-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.2rem;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
-  border: 2px solid rgba(28, 43, 36, 0.15);
 }
 
-.playing-card.excuse {
-  background: linear-gradient(160deg, var(--gold-light), var(--terracotta));
-  color: #241505;
-  font-size: 0.75rem;
-  text-align: center;
-  line-height: 1.1;
-}
-
-.playing-card.hidden-card {
-  background: repeating-linear-gradient(45deg, #113325, #113325 6px, #0c2a1e 6px, #0c2a1e 12px);
-  color: transparent;
-  border-color: rgba(217, 164, 65, 0.4);
-}
-
-.playing-card.declared-mini::after {
-  content: "mini";
+.playing-card svg,
+.hand-card svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .bidding-area,
@@ -467,24 +472,22 @@ table td {
 }
 
 .hand-card {
-  width: 54px;
-  height: 78px;
+  width: 58px;
+  height: 82px;
   border-radius: 8px;
-  background: var(--card-bg);
-  color: var(--card-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.2rem;
-  border: 2px solid rgba(28, 43, 36, 0.15);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
   transition: transform 0.1s ease;
+  cursor: default;
 }
 
 .hand-card.playable {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(217, 164, 65, 0.5);
+  cursor: pointer;
+  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+}
+
+.hand-card.playable svg rect:first-child {
+  stroke: var(--gold-light);
 }
 
 .hand-card.playable:active {
@@ -492,20 +495,7 @@ table td {
 }
 
 .hand-card.disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.hand-card.excuse {
-  background: linear-gradient(160deg, var(--gold-light), var(--terracotta));
-  color: #241505;
-  font-size: 0.7rem;
-}
-
-.hand-card.hidden-card {
-  background: repeating-linear-gradient(45deg, #113325, #113325 6px, #0c2a1e 6px, #0c2a1e 12px);
-  color: var(--cream-dim);
-  font-size: 0.65rem;
+  opacity: 0.55;
 }
 
 .log-panel {
