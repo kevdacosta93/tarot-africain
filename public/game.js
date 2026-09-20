@@ -60,7 +60,6 @@
       <rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="10" fill="url(#cardBg)" stroke="#8a6423" stroke-width="2"/>
       <rect x="9" y="9" width="${w - 18}" height="${h - 18}" rx="7" fill="none" stroke="#c1552e" stroke-width="1" stroke-dasharray="2 3"/>
       <text x="13" y="23" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#3a2a12" font-weight="700">${value}</text>
-      <text x="${w - 13}" y="${h - 13}" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#3a2a12" font-weight="700" text-anchor="end" transform="rotate(180 ${w - 13} ${h - 13})">${value}</text>
       <g transform="translate(${w / 2} ${h / 2})">
         <circle r="27" fill="none" stroke="#c1552e" stroke-width="1.4" opacity="0.5"/>
         <circle r="19" fill="none" stroke="#d9a441" stroke-width="1" opacity="0.6"/>
