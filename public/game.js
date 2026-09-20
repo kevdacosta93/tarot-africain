@@ -122,23 +122,26 @@
     );
   }
 
-  const LIFE_SHORT = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'K'];
+  // Les vies sont representees par les 14 cartes d'une couleur de tarot :
+  // Roi (14, la vie de depart), Dame (13), Cavalier (12), Valet (11),
+  // puis 10 a 2, et enfin As (1).
+  const LIFE_MAX = 14;
+  const LIFE_SHORT = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'C', 'D', 'R'];
+  const LIFE_FULL = ['As', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Valet', 'Cavalier', 'Dame', 'Roi'];
   function lifeShortLabel(lives) {
     if (lives <= 0) return null;
-    return LIFE_SHORT[Math.min(lives, 10) - 1];
+    return LIFE_SHORT[Math.min(lives, LIFE_MAX) - 1];
   }
   function lifeFullLabel(lives) {
     if (lives <= 0) return 'Elimine';
-    if (lives >= 10) return 'Roi';
-    if (lives === 1) return 'As';
-    return String(lives) + ' (vies)';
+    return LIFE_FULL[Math.min(lives, LIFE_MAX) - 1];
   }
 
   function lifeFaceSVG(lives) {
     const w = 46,
       h = 62;
     const eliminated = lives <= 0;
-    const accent = eliminated ? '#8a3530' : lives <= 2 ? '#d1493f' : lives <= 5 ? '#d9a441' : '#4c9a6a';
+    const accent = eliminated ? '#8a3530' : lives <= 3 ? '#d1493f' : lives <= 7 ? '#d9a441' : '#4c9a6a';
     if (eliminated) {
       return svgWrap(
         `
@@ -486,21 +489,35 @@
 
   function renderTrick(state) {
     els.trickArea.innerHTML = '';
-    if (!state.currentTrick || state.currentTrick.length === 0) {
-      if (state.phase === 'playing' || state.phase === 'bidding') {
-        const p = document.createElement('p');
-        p.className = 'hint';
-        p.textContent = state.phase === 'bidding' ? "Phase d'annonces." : 'Pli en cours...';
-        els.trickArea.appendChild(p);
+
+    // Ligne de statut : qui doit jouer, ou qui vient de remporter le pli.
+    // C'est ce qui manquait pour comprendre l'etat du jeu en un coup d'oeil.
+    if (state.phase === 'playing') {
+      const status = document.createElement('p');
+      status.className = 'hint trick-status';
+      if (state.awaitingTrickAck) {
+        status.textContent = `${playerName(state, state.trickWinnerId)} remporte le pli !`;
+      } else if (state.turnId === playerId) {
+        status.textContent = 'A toi de jouer.';
+      } else {
+        status.textContent = `En attente de ${playerName(state, state.turnId)}...`;
       }
+      els.trickArea.appendChild(status);
+    }
+
+    if (!state.currentTrick || state.currentTrick.length === 0) {
       return;
     }
+    // Tant que le pli n'est pas complet, on precise aussi qui a pose quoi
+    // pour qu'on comprenne ce qu'il reste a jouer.
     state.currentTrick.forEach((played) => {
       const wrap = document.createElement('div');
       wrap.className = 'trick-card-wrap';
+      const isWinner = state.awaitingTrickAck && played.playerId === state.trickWinnerId;
+      if (isWinner) wrap.classList.add('is-winner');
       const who = document.createElement('div');
       who.className = 'who';
-      who.textContent = playerName(state, played.playerId);
+      who.textContent = playerName(state, played.playerId) + (isWinner ? ' ★' : '');
       wrap.appendChild(who);
       const cardHolder = document.createElement('div');
       cardHolder.className = 'playing-card';

@@ -375,6 +375,13 @@ input[type="text"]:focus {
   justify-content: center;
 }
 
+.trick-status {
+  width: 100%;
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--gold-light);
+}
+
 .trick-card-wrap {
   display: flex;
   flex-direction: column;
@@ -385,6 +392,16 @@ input[type="text"]:focus {
 .trick-card-wrap .who {
   font-size: 0.7rem;
   color: var(--cream-dim);
+}
+
+.trick-card-wrap.is-winner .who {
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+.trick-card-wrap.is-winner .playing-card {
+  box-shadow: 0 0 0 3px var(--gold), 0 3px 10px rgba(0, 0, 0, 0.4);
+  transform: translateY(-4px);
 }
 
 .playing-card {
