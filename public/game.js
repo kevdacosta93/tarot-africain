@@ -73,21 +73,35 @@
     );
   }
 
-  function excuseFaceSVG(declLabel) {
+  function excuseFaceSVG(declaration) {
     const w = 100,
       h = 140;
+    // Une fois jouee (declaree), l'Excuse affiche sa valeur reelle : 0
+    // pour "mini", 22 pour "maxi". Tant qu'elle n'a pas encore ete jouee
+    // (dans la main), aucune valeur n'est encore fixee : on affiche
+    // seulement son symbole.
+    const value = declaration === 'mini' ? 0 : declaration === 'maxi' ? 22 : null;
+    const cornerLabel = value !== null ? String(value) : 'Ex';
+    const jester = `
+        <path d="M-20 8 L-12 -18 L0 -4 L12 -18 L20 8 Z" fill="#fbf3e3" opacity="${value !== null ? 0.3 : 0.92}"/>
+        <circle cx="-12" cy="-18" r="3.4" fill="#fbf3e3" opacity="${value !== null ? 0.3 : 1}"/>
+        <circle cx="0" cy="-4" r="3.4" fill="#fbf3e3" opacity="${value !== null ? 0.3 : 1}"/>
+        <circle cx="12" cy="-18" r="3.4" fill="#fbf3e3" opacity="${value !== null ? 0.3 : 1}"/>
+        <circle cy="16" r="10" fill="#fbf3e3" opacity="${value !== null ? 0.3 : 1}"/>`;
+    const valueText =
+      value !== null
+        ? `<text x="0" y="10" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#2a1505" font-weight="800">${value}</text>`
+        : '';
     return svgWrap(
       `
       <rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="10" fill="url(#excuseBg)" stroke="#7a3d1a" stroke-width="2"/>
       <rect x="9" y="9" width="${w - 18}" height="${h - 18}" rx="7" fill="none" stroke="#fbf3e3" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+      <text x="13" y="23" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="#2a1505" font-weight="700">${cornerLabel}</text>
       <g transform="translate(${w / 2} ${h / 2 - 12})">
-        <path d="M-20 8 L-12 -18 L0 -4 L12 -18 L20 8 Z" fill="#fbf3e3" opacity="0.92"/>
-        <circle cx="-12" cy="-18" r="3.4" fill="#fbf3e3"/>
-        <circle cx="0" cy="-4" r="3.4" fill="#fbf3e3"/>
-        <circle cx="12" cy="-18" r="3.4" fill="#fbf3e3"/>
-        <circle cy="16" r="10" fill="#fbf3e3" opacity="0.92"/>
+        ${jester}
+        ${valueText}
       </g>
-      <text x="${w / 2}" y="${h - 14}" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#2a1505" font-weight="700">EXCUSE${declLabel ? ' (' + declLabel + ')' : ''}</text>
+      <text x="${w / 2}" y="${h - 14}" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#2a1505" font-weight="700">EXCUSE</text>
     `,
       w,
       h,
@@ -573,13 +587,13 @@
     const modal = document.createElement('div');
     modal.className = 'excuse-modal';
     modal.innerHTML =
-      '<h3>Tu entames avec l\'Excuse</h3>' +
-      '<p class="hint">Elle vaut la carte la plus forte (maxi, tu remportes le pli) ou la plus faible (mini, tu la sacrifies sans risque).</p>';
+      '<h3>Tu joues l\'Excuse</h3>' +
+      '<p class="hint">Choisis sa valeur pour ce pli : 22 (la plus forte, tu tentes de remporter le pli) ou 0 (la plus faible, tu la sacrifies sans risque).</p>';
     const row = document.createElement('div');
     row.className = 'chip-row';
     const btnMaxi = document.createElement('button');
     btnMaxi.className = 'chip-btn';
-    btnMaxi.textContent = 'Maxi (forte)';
+    btnMaxi.textContent = '22 (forte)';
     btnMaxi.addEventListener('click', () => {
       document.body.removeChild(backdrop);
       socket.emit('play_card', { cardId, declaration: 'maxi' }, (res) => {
@@ -588,7 +602,7 @@
     });
     const btnMini = document.createElement('button');
     btnMini.className = 'chip-btn';
-    btnMini.textContent = 'Mini (faible)';
+    btnMini.textContent = '0 (faible)';
     btnMini.addEventListener('click', () => {
       document.body.removeChild(backdrop);
       socket.emit('play_card', { cardId, declaration: 'mini' }, (res) => {
